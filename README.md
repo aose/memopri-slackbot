@@ -11,15 +11,25 @@ CASIO メモプリ（MEP-F10）をSlackBotからたたいて印刷するツー�
     - 無線LAN設定、IPアドレス固定にはMEP-F10のWindows用アプリが必要
 - Docker実行環境
 
+# 動き
+起動の60秒前からのSlack投稿を印刷する
 
 # 実行
 
 `.env.sample` をもとに `.env` を作成する。
 
+## ビルドと動作確認
+
 ```
 docker build -t memopri-slack .
-docker run --restart always -d --name memopri-slack -v $(pwd)/.env:/app/.env:ro memopri-slack
+docker run --rm -v $(pwd)/.env:/app/.env:ro memopri-slack
 ```
+
+## crontab登録
+```
+  * * * * * cd /path/to/memopri-slackbot && docker run --rm -v /path/to/memopri-slackbot/.env:/app/.env:ro memopri-slack
+```
+
 
 # 参考
 Dockerで動かすので接続は固定IPにした

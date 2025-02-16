@@ -1,10 +1,11 @@
 import os
 import time
 import subprocess
+import sys
+import datetime
 from slack_sdk import WebClient
 from slack_sdk.errors import SlackApiError
 from PIL import Image, ImageDraw, ImageFont
-import schedule
 from dotenv import load_dotenv
 
 # .envファイルから環境変数を読み込む
@@ -15,7 +16,7 @@ CHANNEL_ID = os.getenv("SLACK_CHANNEL_ID")
 
 
 # 追跡する最後のメッセージのタイムスタンプ
-last_timestamp = round(time.time(), 6)  # slackのtimestampは小数点以下6桁まで
+last_timestamp = 0  # 初期値。mainで上書きされる
 
 def fetch_latest_messages():
     global last_timestamp
@@ -92,13 +93,12 @@ def delete_image(image_path):
 
 
 def main():
-    # 定期的にメッセージをチェック
-    schedule.every(20).seconds.do(fetch_latest_messages)
-    
-    print("App is running...")
-    while True:
-        schedule.run_pending()
-        time.sleep(1)
+    # 現在時刻の30秒前を起点にする
+    global last_timestamp
+    last_timestamp = round(time.time() - 60, 6) # slackのtimestampは小数点以下6桁まで
+
+    print(f"Starting to fetch messages from timestamp: {last_timestamp}")
+    fetch_latest_messages()
 
 if __name__ == "__main__":
     main()
