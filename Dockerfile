@@ -1,8 +1,8 @@
-FROM python:3.13-bookworm
+FROM ghcr.io/astral-sh/uv:bookworm-slim
 
-RUN pip3 install uv
-
-RUN apt update && apt install -y fonts-noto-cjk
+RUN apt update && apt install -y --no-install-recommends \
+    fonts-noto-cjk \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY ./app /app
 
